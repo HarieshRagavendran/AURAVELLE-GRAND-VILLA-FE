@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Grand Auravelle — Admin Control Center</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230b1713'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23c6a66a' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --obsidian: #0b1713;
+      --forest: #10231d;
+      --emerald: #173127;
+      --card: #142922;
+      --card-hover: #1b382e;
+      --gold: #c6a66a;
+      --gold-light: #dfc48d;
+      --ivory: #f3eee4;
+      --stone: #e5dfd3;
+      --danger: #f44336;
+      --success: #4caf50;
+      --warning: #ff9800;
+      --info: #2196f3;
+    }
+    body {
+      background: #08110e;
+      color: var(--ivory);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Layout */
+    .admin-wrapper {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--obsidian);
+      border-right: 1px solid rgba(198, 166, 106, 0.2);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-header {
+      padding: 1.8rem 1.5rem;
+      border-bottom: 1px solid rgba(198, 166, 106, 0.15);
+    }
+    .sidebar-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      text-decoration: none;
+      display: block;
+    }
+    .sidebar-sub {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--stone);
+      opacity: 0.7;
+      margin-top: 0.2rem;
+    }
+    .sidebar-nav {
+      list-style: none;
+      padding: 1.5rem 0.8rem;
+      flex-grow: 1;
+    }
+    .sidebar-nav li { margin-bottom: 0.4rem; }
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.85rem 1rem;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      color: var(--stone);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.25s;
+    }
+    .nav-btn:hover {
+      background: rgba(198, 166, 106, 0.1);
+      color: var(--gold);
+    }
+    .nav-btn.active {
+      background: rgba(198, 166, 106, 0.18);
+      color: var(--gold-light);
+      border-left: 3px solid var(--gold);
+    }
+    .sidebar-footer {
+      padding: 1.2rem;
+      border-top: 1px solid rgba(198, 166, 106, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-logout {
+      background: none;
+      border: 1px solid rgba(244, 67, 54, 0.5);
+      color: #ff8a80;
+      padding: 0.5rem 0.9rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-logout:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+    .live-site-link {
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* Main Area */
+    .main-panel {
+      margin-left: 260px;
+      flex-grow: 1;
+      padding: 2.5rem 3rem;
+      max-width: 1400px;
+    }
+
+    /* Top Bar Mobile */
+    .topbar-mobile {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: var(--obsidian);
+      border-bottom: 1px solid rgba(198, 166, 106, 0.2);
+    }
+    .mobile-menu-btn {
+      background: none;
+      border: none;
+      color: var(--gold);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Header Section */
+    .page-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      color: var(--ivory);
+      font-weight: 500;
+    }
+    .page-subtitle {
+      font-size: 0.8rem;
+      color: var(--stone);
+      opacity: 0.7;
+      margin-top: 0.2rem;
+    }
+
+    /* Stats Grid */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid rgba(198, 166, 106, 0.25);
+      border-radius: 8px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 4px; height: 100%;
+      background: var(--gold);
+    }
+    .stat-card.new::before { background: var(--info); }
+    .stat-card.called::before { background: var(--warning); }
+    .stat-card.booked::before { background: var(--success); }
+    .stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--stone);
+      opacity: 0.8;
+    }
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      color: var(--gold-light);
+      margin: 0.4rem 0;
+      line-height: 1;
+    }
+
+    /* Tab Panels */
+    .tab-section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .tab-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Cards & Containers */
+    .content-card {
+      background: var(--card);
+      border: 1px solid rgba(198, 166, 106, 0.2);
+      border-radius: 8px;
+      padding: 1.8rem;
+      margin-bottom: 2rem;
+    }
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      color: var(--gold-light);
+      margin-bottom: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.4rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-decoration: none;
+    }
+    .btn-gold {
+      background: var(--gold);
+      color: var(--obsidian);
+    }
+    .btn-gold:hover {
+      background: var(--gold-light);
+      box-shadow: 0 4px 15px rgba(198, 166, 106, 0.3);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+    }
+    .btn-outline:hover {
+      background: rgba(198, 166, 106, 0.15);
+    }
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.7rem;
+    }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-warning { background: var(--warning); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+
+    /* Tables */
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: 6px;
+      border: 1px solid rgba(198, 166, 106, 0.15);
+    }
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.82rem;
+    }
+    .custom-table th {
+      background: var(--obsidian);
+      color: var(--gold);
+      padding: 1rem 1.2rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-bottom: 1px solid rgba(198, 166, 106, 0.25);
+    }
+    .custom-table td {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--stone);
+    }
+    .custom-table tr:hover td {
+      background: var(--card-hover);
+      color: var(--ivory);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.7rem;
+      border-radius: 50px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .badge.new { background: rgba(33, 150, 243, 0.2); color: #64b5f6; border: 1px solid #2196f3; }
+    .badge.called { background: rgba(255, 152, 0, 0.2); color: #ffb74d; border: 1px solid #ff9800; }
+    .badge.booked { background: rgba(76, 175, 80, 0.2); color: #81c784; border: 1px solid #4caf50; }
+    .badge.cancelled { background: rgba(244, 67, 54, 0.2); color: #e57373; border: 1px solid #f44336; }
+
+    /* Filters Bar */
+    .filters-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .filter-tags { display: flex; gap: 0.5rem; }
+    .filter-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(198, 166, 106, 0.2);
+      color: var(--stone);
+      padding: 0.4rem 0.9rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-pill.active, .filter-pill:hover {
+      background: var(--gold);
+      color: var(--obsidian);
+      border-color: var(--gold);
+    }
+    .search-box {
+      background: rgba(11, 23, 19, 0.8);
+      border: 1px solid rgba(198, 166, 106, 0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      color: var(--ivory);
+      font-size: 0.8rem;
+      outline: none;
+      min-width: 250px;
+    }
+
+    /* Forms & Inputs */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .form-field {
+      margin-bottom: 1.2rem;
+    }
+    .form-field label {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .form-field input, .form-field textarea, .form-field select {
+      width: 100%;
+      background: rgba(11, 23, 19, 0.9);
+      border: 1px solid rgba(198, 166, 106, 0.3);
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      color: var(--ivory);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-field input:focus, .form-field textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(198, 166, 106, 0.2);
+    }
+
+    /* Room Cards Grid */
+    .rooms-admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .room-admin-card {
+      background: var(--card);
+      border: 1px solid rgba(198, 166, 106, 0.25);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .room-card-preview {
+      height: 180px;
+      width: 100%;
+      object-fit: cover;
+      background: var(--forest);
+    }
+    .room-card-body {
+      padding: 1.4rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .room-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      color: var(--ivory);
+      margin-bottom: 0.3rem;
+    }
+    .room-card-price-tag {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 0.8rem;
+    }
+    .room-card-desc {
+      font-size: 0.8rem;
+      color: var(--stone);
+      line-height: 1.5;
+      margin-bottom: 1.2rem;
+      flex-grow: 1;
+    }
+    .room-card-foot {
+      display: flex;
+      gap: 0.6rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 1rem;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1.5rem;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: var(--card);
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 650px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--card);
+      border-left: 4px solid var(--gold);
+      color: var(--ivory);
+      padding: 1rem 1.5rem;
+      border-radius: 4px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      font-size: 0.85rem;
+      display: none;
+      z-index: 2000;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-panel { margin-left: 0; padding: 1.5rem; }
+      .topbar-mobile { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-wrapper">
+  <!-- Topbar Mobile -->
+  <div class="topbar-mobile">
+    <div style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--gold);">AURAVELLE ADMIN</div>
+    <button class="mobile-menu-btn" id="menu-toggle">☰</button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="sidebar-logo">THE GRAND AURAVELLE</a>
+      <div class="sidebar-sub">Control Portal</div>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><button class="nav-btn active" data-tab="dashboard">📊 Dashboard</button></li>
+      <li><button class="nav-btn" data-tab="enquiries">📬 Enquiries</button></li>
+      <li><button class="nav-btn" data-tab="rooms">🛏️ Rooms & Pricing</button></li>
+      <li><button class="nav-btn" data-tab="settings">⚙️ Site Settings (Live Sync)</button></li>
+      <li><button class="nav-btn" data-tab="reviews">⭐ Guest Reviews</button></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <a href="index.html" target="_blank" class="live-site-link">↗ Visit Live Site</a>
+      <button class="btn-logout" id="logout-btn">Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-panel">
+    <!-- ════════ TAB: DASHBOARD ════════ -->
+    <section class="tab-section active" id="tab-dashboard">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Executive Dashboard</h1>
+          <p class="page-subtitle">Real-time booking pipeline and property statistics</p>
+        </div>
+        <button class="btn btn-gold" onclick="exportCSV()">📥 Download All Enquiries CSV</button>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card new">
+          <div class="stat-label">Pending Inquiries</div>
+          <div class="stat-number" id="stat-new">0</div>
+          <div style="font-size: 0.7rem; color: #64b5f6;">Requires Callback</div>
+        </div>
+        <div class="stat-card called">
+          <div class="stat-label">In Discussion / Called</div>
+          <div class="stat-number" id="stat-called">0</div>
+          <div style="font-size: 0.7rem; color: #ffb74d;">Pending Guest Decision</div>
+        </div>
+        <div class="stat-card booked">
+          <div class="stat-label">Confirmed Bookings</div>
+          <div class="stat-number" id="stat-booked">0</div>
+          <div style="font-size: 0.7rem; color: #81c784;">Successfully Reserved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Suites Online</div>
+          <div class="stat-number" id="stat-rooms">4</div>
+          <div style="font-size: 0.7rem; color: var(--gold);">Synced with Main Site</div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="card-title">
+          <span>Recent Booking Requests</span>
+          <button class="btn btn-outline btn-sm" onclick="switchTab('enquiries')">View All</button>
+        </div>
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Guest</th>
+                <th>Phone</th>
+                <th>Check-In</th>
+                <th>Guests</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="dashboard-recent-table">
+              <tr><td colspan="6" style="text-align:center;">Loading enquiries...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ TAB: ENQUIRIES ════════ -->
+    <section class="tab-section" id="tab-enquiries">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Guest Booking Enquiries</h1>
+          <p class="page-subtitle">Manage guest inquiries, phone callbacks, and reservation statuses</p>
+        </div>
+        <button class="btn btn-gold" onclick="exportCSV()">📥 Export CSV</button>
+      </div>
+
+      <div class="content-card">
+        <div class="filters-bar">
+          <div class="filter-tags">
+            <button class="filter-pill active" onclick="setFilter('all', this)">All</button>
+            <button class="filter-pill" onclick="setFilter('new', this)">New</button>
+            <button class="filter-pill" onclick="setFilter('called', this)">Called</button>
+            <button class="filter-pill" onclick="setFilter('booked', this)">Booked</button>
+          </div>
+          <input type="text" class="search-box" id="enquiry-search" placeholder="🔍 Search guest, phone, email..." oninput="filterTable()" />
+        </div>
+
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Guest Details</th>
+                <th>Dates</th>
+                <th>Guests</th>
+                <th>Location / Notes</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="enquiries-full-table">
+              <tr><td colspan="7" style="text-align:center;">Loading data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ TAB: ROOMS & PRICING ════════ -->
+    <section class="tab-section" id="tab-rooms">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Suites & Room Pricing</h1>
+          <p class="page-subtitle">Changes made here automatically update on the live main website</p>
+        </div>
+        <button class="btn btn-gold" onclick="openAddRoomModal()">+ Add New Suite</button>
+      </div>
+
+      <div class="rooms-admin-grid" id="rooms-admin-list">
+        <!-- Dynamically rendered -->
+      </div>
+    </section>
+
+    <!-- ════════ TAB: SITE SETTINGS ════════ -->
+    <section class="tab-section" id="tab-settings">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Live Website Settings</h1>
+          <p class="page-subtitle">Modify phone, email, and prices. Everything updates in real time across the site.</p>
+        </div>
+        <button class="btn btn-gold" onclick="saveSiteSettings()">💾 Save All Changes</button>
+      </div>
+
+      <div class="content-card">
+        <div class="card-title">📞 Contact & Communication Numbers</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Primary Phone Number (Click-to-Call)</label>
+            <input type="tel" id="set-phone" placeholder="+91 99446 12179" />
+          </div>
+          <div class="form-field">
+            <label>Official Email Address</label>
+            <input type="email" id="set-email" placeholder="auravellegrand@gmail.com" />
+          </div>
+          <div class="form-field">
+            <label>WhatsApp Number (Direct Chat)</label>
+            <input type="tel" id="set-whatsapp" placeholder="+919944612179" />
+          </div>
+          <div class="form-field">
+            <label>Villa Location / Address</label>
+            <input type="text" id="set-address" placeholder="Kanthalloor, Kerala 685598" />
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="card-title">🏷️ Pricing & Showcase Settings</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Starting Price Display (e.g. ₹8,000)</label>
+            <input type="text" id="set-price-start" placeholder="₹8,000" />
+          </div>
+          <div class="form-field">
+            <label>Instagram Handle URL</label>
+            <input type="url" id="set-instagram" placeholder="https://instagram.com/thegrandauravelle" />
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="card-title">🔍 Advanced SEO & Meta Tags</div>
+        <div class="form-field">
+          <label>Website Title (Google & Social Meta)</label>
+          <input type="text" id="set-meta-title" placeholder="The Grand Auravelle Pool Villa · Kanthalloor, Kerala" />
+        </div>
+        <div class="form-field">
+          <label>Website Description</label>
+          <textarea id="set-meta-desc" rows="3" placeholder="Luxury mountain retreat with private pool suites in Kanthalloor, Kerala..."></textarea>
+        </div>
+      </div>
+    </section>
+  
+    <!-- ════════ TAB: GUEST REVIEWS ════════ -->
+    <section class="tab-section" id="tab-reviews">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Guest Reviews Management</h1>
+          <p class="page-subtitle">Add, edit, or remove customer reviews displayed on the website</p>
+        </div>
+        <button class="btn btn-gold" onclick="openAddReviewModal()">+ Add New Review</button>
+      </div>
+
+      <div class="content-card">
+        <div class="filters-bar">
+          <div class="filter-tags">
+            <button class="filter-pill active" onclick="setReviewFilter('all', this)">All</button>
+            <button class="filter-pill" onclick="setReviewFilter('featured', this)">Featured</button>
+            <button class="filter-pill" onclick="setReviewFilter('not-featured', this)">Not Featured</button>
+          </div>
+          <input type="text" class="search-box" id="review-search" placeholder="🔍 Search guest name or review..." oninput="filterReviews()" />
+        </div>
+
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Avatar</th>
+                <th>Guest Details</th>
+                <th>Rating</th>
+                <th>Review</th>
+                <th>Source</th>
+                <th>Featured</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="reviews-table">
+              <tr><td colspan="7" style="text-align:center;">Loading reviews...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+</main>
+</div>
+
+<!-- Modal for Add/Edit Suite -->
+<div class="modal-backdrop" id="room-modal">
+  <div class="modal-box">
+    <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--gold); margin-bottom: 1.5rem;" id="modal-heading">Add Suite</h2>
+
+    <form id="suite-form">
+      <input type="hidden" id="modal-room-id" />
+      <div class="form-field">
+        <label>Suite Name *</label>
+        <input type="text" id="modal-room-name" required placeholder="e.g. Royal Balcony Suite" />
+      </div>
+      <div class="form-field">
+        <label>Subtitle / Key Feature</label>
+        <input type="text" id="modal-room-subtitle" placeholder="e.g. Private Pool & Mountain Panorama" />
+      </div>
+      <div class="form-field">
+        <label>Nightly Price (₹) *</label>
+        <input type="number" id="modal-room-price" required placeholder="12500" />
+      </div>
+      <div class="form-field">
+        <label>Description</label>
+        <textarea id="modal-room-desc" rows="3" placeholder="Describe the room, atmosphere, and view..."></textarea>
+      </div>
+      <div class="form-field">
+        <label>Amenities (Comma-separated)</label>
+        <input type="text" id="modal-room-amenities" placeholder="King Bed, Private Heated Pool, Mountain View, Mini Bar, WiFi" />
+      </div>
+      <div class="form-field">
+        <label>Image URLs (One per line)</label>
+        <textarea id="modal-room-images" rows="2" placeholder="images/balcony-suite.jpg&#10;images/balcony-view.jpg"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <button type="button" class="btn btn-outline" onclick="closeRoomModal()">Cancel</button>
+        <button type="submit" class="btn btn-gold">Save Suite</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // Auth Token
+  const token = localStorage.getItem('auravelle_admin_token');
+  if (!token) {
+    window.location.href = 'admin-login.html';
+  }
+
+  const API_BASE = window.location.origin.includes(':3000')
+    ? window.location.origin + '/api'
+    : (window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api');
+
+  let allEnquiries = [];
+  let currentFilter = 'all';
+  let allRooms = [];
+
+  // Init
+  document.addEventListener('DOMContentLoaded', () => {
+    setupNavigation();
+    loadDashboard();
+    loadEnquiries();
+    loadRooms();
+    loadSettings();
+  });
+
+  // Navigation
+  function setupNavigation() {
+    document.querySelectorAll('.sidebar-nav .nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        switchTab(tab);
+      });
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      localStorage.removeItem('auravelle_admin_token');
+      window.location.href = 'admin-login.html';
+    });
+
+    document.getElementById('menu-toggle')?.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.sidebar-nav .nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('active');
+
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`tab-${tabId}`)?.classList.add('active');
+
+    if (tabId === 'reviews') { loadReviews(); }
+    // Close mobile drawer if open
+    document.getElementById('sidebar').classList.remove('open');
+  }
+
+  // Toast Helper
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.borderLeftColor = isError ? '#f44336' : '#c6a66a';
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 3500);
+  }
+
+  // ════════ ENQUIRIES & DASHBOARD ════════
+  async function loadDashboard() {
+    try {
+      const res = await fetch(`${API_BASE}/admin/enquiries`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.status === 401) {
+        localStorage.removeItem('auravelle_admin_token');
+        window.location.href = 'admin-login.html';
+        return;
+      }
+      allEnquiries = await res.json();
+      updateDashboardCounts();
+      renderDashboardRecent();
+    } catch (err) {
+      console.warn('Backend unavailable, rendering demo data');
+      mockLocalEnquiries();
+    }
+  }
+
+  function mockLocalEnquiries() {
+    allEnquiries = [
+      { id: 1, name: "Rahul Sharma", email: "rahul.s@gmail.com", phone: "+91 98401 23456", location: "Bangalore", check_in_date: "2026-10-15", check_out_date: "2026-10-18", guest_count: 2, status: "new", special_requests: "Honeymoon setup with pool flowers", created_at: new Date().toISOString() },
+      { id: 2, name: "Ananya Iyer", email: "ananya.iyer@outlook.com", phone: "+91 97890 87654", location: "Chennai", check_in_date: "2026-10-22", check_out_date: "2026-10-25", guest_count: 4, status: "called", special_requests: "Barbecue dinner booking", created_at: new Date(Date.now() - 86400000).toISOString() },
+      { id: 3, name: "Vikram Menon", email: "vikram.menon@gmail.com", phone: "+91 94441 55667", location: "Kochi", check_in_date: "2026-11-01", check_out_date: "2026-11-04", guest_count: 2, status: "booked", special_requests: "Private balcony pool villa requested", created_at: new Date(Date.now() - 172800000).toISOString() }
+    ];
+    updateDashboardCounts();
+    renderDashboardRecent();
+    renderEnquiriesTable();
+  }
+
+  function updateDashboardCounts() {
+    document.getElementById('stat-new').textContent = allEnquiries.filter(e => e.status === 'new').length;
+    document.getElementById('stat-called').textContent = allEnquiries.filter(e => e.status === 'called').length;
+    document.getElementById('stat-booked').textContent = allEnquiries.filter(e => e.status === 'booked').length;
+  }
+
+  function renderDashboardRecent() {
+    const tbody = document.getElementById('dashboard-recent-table');
+    const recent = allEnquiries.slice(0, 5);
+    if (!recent.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No inquiries yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = recent.map(e => `
+      <tr>
+        <td><strong>${escapeHtml(e.name)}</strong><br><small style="opacity:0.7;">${escapeHtml(e.email)}</small></td>
+        <td><a href="tel:${e.phone}" style="color:var(--gold); text-decoration:none;">${escapeHtml(e.phone)}</a></td>
+        <td>${e.check_in_date}</td>
+        <td>${e.guest_count} Guests</td>
+        <td><span class="badge ${e.status}">${e.status}</span></td>
+        <td>
+          <button class="btn btn-sm btn-success" onclick="updateStatus(${e.id}, 'called')">✓ Called</button>
+          <button class="btn btn-sm btn-warning" onclick="updateStatus(${e.id}, 'booked')">→ Booked</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function loadEnquiries() {
+    if (!allEnquiries.length) await loadDashboard();
+    renderEnquiriesTable();
+  }
+
+  function renderEnquiriesTable() {
+    const tbody = document.getElementById('enquiries-full-table');
+    const search = (document.getElementById('enquiry-search')?.value || '').toLowerCase();
+
+    const filtered = allEnquiries.filter(e => {
+      const matchFilter = currentFilter === 'all' || e.status === currentFilter;
+      const matchSearch = !search ||
+        e.name.toLowerCase().includes(search) ||
+        e.phone.toLowerCase().includes(search) ||
+        e.email.toLowerCase().includes(search) ||
+        (e.location && e.location.toLowerCase().includes(search));
+      return matchFilter && matchSearch;
+    });
+
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem;">No matching inquiries found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(e => `
+      <tr>
+        <td><small>${new Date(e.created_at).toLocaleDateString()}</small></td>
+        <td>
+          <strong>${escapeHtml(e.name)}</strong><br>
+          <a href="tel:${e.phone}" style="color:var(--gold); text-decoration:none;">${escapeHtml(e.phone)}</a><br>
+          <small style="opacity:0.7;">${escapeHtml(e.email)}</small>
+        </td>
+        <td><strong>In:</strong> ${e.check_in_date}<br><strong>Out:</strong> ${e.check_out_date || '—'}</td>
+        <td>${e.guest_count} Guests</td>
+        <td>
+          <small><strong>City:</strong> ${escapeHtml(e.location || '—')}</small><br>
+          <small style="opacity:0.8;">${escapeHtml(e.special_requests || 'None')}</small>
+        </td>
+        <td><span class="badge ${e.status}">${e.status}</span></td>
+        <td>
+          <div style="display:flex; gap:0.3rem; flex-wrap:wrap;">
+            <button class="btn btn-sm btn-success" title="Mark Called" onclick="updateStatus(${e.id}, 'called')">Called</button>
+            <button class="btn btn-sm btn-warning" title="Mark Booked" onclick="updateStatus(${e.id}, 'booked')">Booked</button>
+            <button class="btn btn-sm btn-danger" title="Delete" onclick="deleteEnquiry(${e.id})">✕</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function setFilter(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    renderEnquiriesTable();
+  }
+
+  function filterTable() {
+    renderEnquiriesTable();
+  }
+
+  async function updateStatus(id, newStatus) {
+    try {
+      await fetch(`${API_BASE}/admin/enquiries/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+      showToast(`Status marked as '${newStatus}'`);
+    } catch (e) {
+      // Local demo fallback
+      const item = allEnquiries.find(e => e.id === id);
+      if (item) item.status = newStatus;
+      showToast(`Status updated to ${newStatus} (Local)`);
+    }
+    await loadDashboard();
+    renderEnquiriesTable();
+  }
+
+  async function deleteEnquiry(id) {
+    if (!confirm('Are you sure you want to delete this enquiry?')) return;
+    try {
+      await fetch(`${API_BASE}/admin/enquiries/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      showToast('Enquiry removed');
+    } catch (e) {
+      allEnquiries = allEnquiries.filter(e => e.id !== id);
+      showToast('Enquiry deleted (Local)');
+    }
+    await loadDashboard();
+    renderEnquiriesTable();
+  }
+
+  function exportCSV() {
+    window.open(`${API_BASE}/admin/export-csv`, '_blank');
+  }
+
+  // ════════ ROOMS & PRICING MANAGEMENT ════════
+  async function loadRooms() {
+    try {
+      const res = await fetch(`${API_BASE}/rooms`);
+      allRooms = await res.json();
+      renderRoomsAdmin();
+      document.getElementById('stat-rooms').textContent = allRooms.length;
+    } catch (e) {
+      // Default fallback
+      allRooms = [
+        { id: 1, name: "Balcony Suite", subtitle: "Panoramic Mountain View", price: 8500, description: "Wake up to misty hill vistas from your private balcony with luxury rain shower.", images: ["images/balcony-suite.jpg"], amenities: ["King Bed", "Private Balcony", "Mountain View"] },
+        { id: 2, name: "Grand Pool Suite", subtitle: "Private Heated Plunge Pool", price: 14500, description: "Luxury plunge pool adjoining the bedroom suite with floor-to-ceiling glass.", images: ["images/bedroom-suite-1.jpg"], amenities: ["King Bed", "Private Heated Pool", "Jacuzzi"] },
+        { id: 3, name: "Forest Retreat Villa", subtitle: "Secluded Lawn & Waterfall", price: 11000, description: "Teakwood four-poster bed and private wooden deck near the forest stream.", images: ["images/bedroom-suite-2.jpg"], amenities: ["Queen Bed", "Forest Lawn", "Outdoor Firepit"] },
+        { id: 4, name: "Highland Jacuzzi Suite", subtitle: "Open-Air Stargazing Jacuzzi", price: 16500, description: "Terrace jacuzzi overlooking tea estates and misty peaks.", images: ["images/highland.jpeg"], amenities: ["King Bed", "Terrace Jacuzzi", "270° Panorama"] }
+      ];
+      renderRoomsAdmin();
+    }
+  }
+
+  function renderRoomsAdmin() {
+    const container = document.getElementById('rooms-admin-list');
+    container.innerHTML = allRooms.map(r => `
+      <div class="room-admin-card">
+        <img src="${r.images?.[0] || 'images/villa-facade.png'}" class="room-card-preview" alt="${escapeHtml(r.name)}" onerror="this.src='images/villa-facade.png'">
+        <div class="room-card-body">
+          <div class="room-card-title">${escapeHtml(r.name)}</div>
+          <div style="font-size:0.75rem; color:var(--stone); margin-bottom:0.4rem;">${escapeHtml(r.subtitle || '')}</div>
+          <div class="room-card-price-tag">₹${Number(r.price).toLocaleString()} <span style="font-size:0.75rem; font-weight:400; color:var(--stone);">/ night</span></div>
+          <div class="room-card-desc">${escapeHtml(r.description || '')}</div>
+          <div class="room-card-foot">
+            <button class="btn btn-outline btn-sm" onclick="openEditRoomModal(${r.id})">✏️ Edit Details & Price</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteRoom(${r.id})">Delete</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openAddRoomModal() {
+    document.getElementById('modal-heading').textContent = 'Add New Suite';
+    document.getElementById('suite-form').reset();
+    document.getElementById('modal-room-id').value = '';
+    document.getElementById('room-modal').classList.add('open');
+  }
+
+  function openEditRoomModal(id) {
+    const room = allRooms.find(r => r.id === id);
+    if (!room) return;
+    document.getElementById('modal-heading').textContent = 'Edit Suite';
+    document.getElementById('modal-room-id').value = room.id;
+    document.getElementById('modal-room-name').value = room.name;
+    document.getElementById('modal-room-subtitle').value = room.subtitle || '';
+    document.getElementById('modal-room-price').value = room.price;
+    document.getElementById('modal-room-desc').value = room.description || '';
+    document.getElementById('modal-room-amenities').value = (room.amenities || []).join(', ');
+    document.getElementById('modal-room-images').value = (room.images || []).join('\n');
+    document.getElementById('room-modal').classList.add('open');
+  }
+
+  function closeRoomModal() {
+    document.getElementById('room-modal').classList.remove('open');
+  }
+
+  document.getElementById('suite-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('modal-room-id').value;
+    const roomData = {
+      name: document.getElementById('modal-room-name').value.trim(),
+      subtitle: document.getElementById('modal-room-subtitle').value.trim(),
+      price: parseFloat(document.getElementById('modal-room-price').value) || 0,
+      description: document.getElementById('modal-room-desc').value.trim(),
+      amenities: document.getElementById('modal-room-amenities').value.split(',').map(s => s.trim()).filter(Boolean),
+      images: document.getElementById('modal-room-images').value.split('\n').map(s => s.trim()).filter(Boolean)
+    };
+
+    try {
+      const url = id ? `${API_BASE}/admin/rooms/${id}` : `${API_BASE}/admin/rooms`;
+      const method = id ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(roomData)
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      showToast('Suite updated and live on website!');
+    } catch (err) {
+      // Local fallback
+      if (id) {
+        const idx = allRooms.findIndex(r => r.id == id);
+        if (idx !== -1) allRooms[idx] = { ...allRooms[idx], ...roomData };
+      } else {
+        allRooms.push({ id: Date.now(), ...roomData });
+      }
+      showToast('Suite saved (Local Mode)');
+    }
+
+    closeRoomModal();
+    renderRoomsAdmin();
+  });
+
+  async function deleteRoom(id) {
+    if (!confirm('Are you sure you want to delete this suite? It will disappear from the website.')) return;
+    try {
+      await fetch(`${API_BASE}/admin/rooms/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      showToast('Room deleted from live site');
+    } catch (e) {
+      allRooms = allRooms.filter(r => r.id !== id);
+      showToast('Room deleted (Local)');
+    }
+    renderRoomsAdmin();
+  }
+
+  // ════════ SITE SETTINGS MANAGEMENT ════════
+  async function loadSettings() {
+    try {
+      const res = await fetch(`${API_BASE}/settings`);
+      const s = await res.json();
+      document.getElementById('set-phone').value = s.phone || '+91 99446 12179';
+      document.getElementById('set-email').value = s.email || 'auravellegrand@gmail.com';
+      document.getElementById('set-whatsapp').value = s.whatsapp || '+919944612179';
+      document.getElementById('set-address').value = s.address || 'Kanthalloor, Kerala 685598';
+      document.getElementById('set-price-start').value = s.price_range_start || '₹8,000';
+      document.getElementById('set-instagram').value = s.instagram || 'https://instagram.com/thegrandauravelle';
+      document.getElementById('set-meta-title').value = s.meta_title || 'The Grand Auravelle Pool Villa · Kanthalloor, Kerala';
+      document.getElementById('set-meta-desc').value = s.meta_description || 'Luxury mountain retreat with private pool suites in Kanthalloor, Kerala.';
+    } catch (e) {
+      console.warn('Using default settings view');
+    }
+  }
+
+  async function saveSiteSettings() {
+    const settings = {
+      phone: document.getElementById('set-phone').value.trim(),
+      email: document.getElementById('set-email').value.trim(),
+      whatsapp: document.getElementById('set-whatsapp').value.trim(),
+      address: document.getElementById('set-address').value.trim(),
+      price_range_start: document.getElementById('set-price-start').value.trim(),
+      instagram: document.getElementById('set-instagram').value.trim(),
+      meta_title: document.getElementById('set-meta-title').value.trim(),
+      meta_description: document.getElementById('set-meta-desc').value.trim()
+    };
+
+    try {
+      for (const [key, value] of Object.entries(settings)) {
+        await fetch(`${API_BASE}/admin/settings/${key}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ value })
+        });
+      }
+      showToast('✓ All settings synced with live website!');
+    } catch (e) {
+      showToast('Settings saved (Offline Mode)');
+    }
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString().replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
+  }
+
+
+  // ===== GUEST REVIEWS MANAGEMENT =====
+  let allReviews = [];
+  let currentReviewFilter = 'all';
+
+  async function loadReviews() {
+    try {
+      const res = await fetch(`${API_BASE}/admin/reviews`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.status === 401) {
+        localStorage.removeItem('auravelle_admin_token');
+        window.location.href = 'admin-login.html';
+        return;
+      }
+      allReviews = await res.json();
+      renderReviewsTable();
+    } catch (err) {
+      console.warn('Backend unavailable, using demo reviews');
+      allReviews = [
+        { id: 1, guest_name: 'Priya M.', guest_location: 'Kochi', guest_avatar: 'P', rating: 5, review_text: 'The pool with that mountain backdrop - we still talk about it.', source: 'Booking.com', is_featured: true, display_order: 1 },
+        { id: 2, guest_name: 'Rahul & Divya', guest_location: 'Bangalore', guest_avatar: 'R', rating: 5, review_text: 'Perfect anniversary getaway.', source: 'TripAdvisor', is_featured: true, display_order: 2 },
+        { id: 3, guest_name: 'Anand K.', guest_location: 'Chennai', guest_avatar: 'A', rating: 5, review_text: 'Kanthalloor is already beautiful.', source: 'VoyeHomes', is_featured: true, display_order: 3 }
+      ];
+      renderReviewsTable();
+    }
+  }
+
+  function renderReviewsTable() {
+    const tbody = document.getElementById('reviews-table');
+    const search = (document.getElementById('review-search')?.value || '').toLowerCase();
+    let filtered = allReviews.filter(r => {
+      const matchFilter = currentReviewFilter === 'all' || (currentReviewFilter === 'featured' && r.is_featured) || (currentReviewFilter === 'not-featured' && !r.is_featured);
+      const matchSearch = !search || r.guest_name.toLowerCase().includes(search) || r.review_text.toLowerCase().includes(search);
+      return matchFilter && matchSearch;
+    });
+    if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem;">No reviews found.</td></tr>'; return; }
+    tbody.innerHTML = filtered.map(r => `<tr><td><div style="width:36px;height:36px;border-radius:50%;background:var(--emerald);border:1px solid var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:600;">${escapeHtml(r.guest_avatar || r.guest_name.charAt(0))}</div></td><td><strong>${escapeHtml(r.guest_name)}</strong><br><small style="opacity:0.7;">${escapeHtml(r.guest_location || '')}</small></td><td>${'★'.repeat(r.rating)}</td><td style="max-width:280px;"><small>${escapeHtml(r.review_text.substring(0, 120))}</small></td><td><small>${escapeHtml(r.source || 'Google')}</small></td><td><span class="badge ${r.is_featured ? 'booked' : 'new'}">${r.is_featured ? 'Featured' : 'Hidden'}</span></td><td><button class="btn btn-outline btn-sm" onclick="openEditReviewModal(${r.id})">Edit</button> <button class="btn btn-sm btn-danger" onclick="deleteReview(${r.id})">X</button></td></tr>`).join('');
+  }
+
+  function setReviewFilter(filter, el) { currentReviewFilter = filter; document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active')); el.classList.add('active'); renderReviewsTable(); }
+  function filterReviews() { renderReviewsTable(); }
+
+  function openAddReviewModal() {
+    document.getElementById('review-modal-heading').textContent = 'Add New Review';
+    document.getElementById('review-form').reset();
+    document.getElementById('modal-review-id').value = '';
+    document.getElementById('modal-review-rating').value = '5';
+    document.getElementById('modal-review-order').value = allReviews.length + 1;
+    document.getElementById('review-modal').classList.add('open');
+  }
+
+  function openEditReviewModal(id) {
+    const r = allReviews.find(x => x.id === id);
+    if (!r) return;
+    document.getElementById('review-modal-heading').textContent = 'Edit Review';
+    document.getElementById('modal-review-id').value = r.id;
+    document.getElementById('modal-review-name').value = r.guest_name || '';
+    document.getElementById('modal-review-location').value = r.guest_location || '';
+    document.getElementById('modal-review-rating').value = r.rating || 5;
+    document.getElementById('modal-review-source').value = r.source || '';
+    document.getElementById('modal-review-source-url').value = r.source_url || '';
+    document.getElementById('modal-review-text').value = r.review_text || '';
+    document.getElementById('modal-review-order').value = r.display_order || 0;
+    document.getElementById('modal-review-featured').checked = r.is_featured === true;
+    document.getElementById('review-modal').classList.add('open');
+  }
+
+  function closeReviewModal() { document.getElementById('review-modal').classList.remove('open'); }
+
+  document.getElementById('review-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('modal-review-id').value;
+    const reviewData = {
+      guest_name: document.getElementById('modal-review-name').value.trim(),
+      guest_location: document.getElementById('modal-review-location').value.trim(),
+      guest_avatar: document.getElementById('modal-review-name').value.trim().charAt(0).toUpperCase(),
+      rating: parseInt(document.getElementById('modal-review-rating').value),
+      review_text: document.getElementById('modal-review-text').value.trim(),
+      source: document.getElementById('modal-review-source').value.trim() || 'Google',
+      source_url: document.getElementById('modal-review-source-url').value.trim(),
+      display_order: parseInt(document.getElementById('modal-review-order').value) || 0,
+      is_featured: document.getElementById('modal-review-featured').checked
+    };
+    try {
+      const url = id ? `${API_BASE}/admin/reviews/${id}` : `${API_BASE}/admin/reviews`;
+      const method = id ? 'PUT' : 'POST';
+      await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(reviewData) });
+      showToast('Review saved successfully!');
+    } catch (err) {
+      if (id) { const idx = allReviews.findIndex(x => x.id == id); if (idx !== -1) allReviews[idx] = { ...allReviews[idx], ...reviewData }; } else { allReviews.push({ id: Date.now(), ...reviewData }); }
+      showToast('Review saved (Local Mode)');
+    }
+    closeReviewModal();
+    renderReviewsTable();
+  });
+
+  async function deleteReview(id) {
+    if (!confirm('Delete this review?')) return;
+    try { await fetch(`${API_BASE}/admin/reviews/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); showToast('Review deleted'); } catch (err) { allReviews = allReviews.filter(r => r.id !== id); showToast('Review deleted (Local)'); }
+    renderReviewsTable();
+  }
+
+</script>
+
+<!-- Modal for Add/Edit Review -->
+<div class="modal-backdrop" id="review-modal">
+  <div class="modal-box">
+    <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--gold); margin-bottom: 1.5rem;" id="review-modal-heading">Add Review</h2>
+
+    <form id="review-form">
+      <input type="hidden" id="modal-review-id" />
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Guest Name *</label>
+          <input type="text" id="modal-review-name" required placeholder="e.g. Priya M." />
+        </div>
+        <div class="form-field">
+          <label>Guest Location</label>
+          <input type="text" id="modal-review-location" placeholder="e.g. Kochi" />
+        </div>
+        <div class="form-field">
+          <label>Rating (1-5)</label>
+          <select id="modal-review-rating">
+            <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+            <option value="4">⭐⭐⭐⭐ (4)</option>
+            <option value="3">⭐⭐⭐ (3)</option>
+            <option value="2">⭐⭐ (2)</option>
+            <option value="1">⭐ (1)</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Source / Platform</label>
+          <input type="text" id="modal-review-source" placeholder="e.g. Google, TripAdvisor, Booking.com" />
+        </div>
+        <div class="form-field">
+          <label>Source URL</label>
+          <input type="url" id="modal-review-source-url" placeholder="https://..." />
+        </div>
+        <div class="form-field">
+          <label>Display Order</label>
+          <input type="number" id="modal-review-order" value="0" min="0" />
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Review Text *</label>
+        <textarea id="modal-review-text" rows="4" required placeholder="The guest review content..."></textarea>
+      </div>
+      <div class="form-field" style="display: flex; align-items: center; gap: 0.5rem;">
+        <input type="checkbox" id="modal-review-featured" style="width: auto;" />
+        <label style="margin: 0; font-size: 0.85rem; color: var(--ivory);">Show on website homepage (Featured)</label>
+      </div>
+
+      <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <button type="button" class="btn btn-outline" onclick="closeReviewModal()">Cancel</button>
+        <button type="submit" class="btn btn-gold">Save Review</button>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

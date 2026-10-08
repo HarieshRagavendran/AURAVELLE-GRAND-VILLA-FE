@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://thegrandauravelle.com/</loc>
+    <lastmod>2026-10-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://thegrandauravelle.com/images/villa-facade.png</image:loc>
+      <image:title>The Grand Auravelle Pool Villa Facade</image:title>
+      <image:caption>Luxury pool retreat architecture in Kanthalloor, Kerala</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://thegrandauravelle.com/images/hero-landscape.jpg</image:loc>
+      <image:title>The Grand Auravelle Mountain View Panorama</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://thegrandauravelle.com/images/pool.jpg</image:loc>
+      <image:title>Private Heated Infinity Pool Suite</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://thegrandauravelle.com/images/jacuzzi.jpg</image:loc>
+      <image:title>Open-Air Stargazing Jacuzzi</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://thegrandauravelle.com/images/campfire-bbq.png</image:loc>
+      <image:title>Campfire and Barbecue Evening</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://thegrandauravelle.com/images/forest-waterfall.jpg</image:loc>
+      <image:title>Secluded Waterfall Nature Excursion</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thegrandauravelle.com/privacy.html</loc>
+    <lastmod>2026-10-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://thegrandauravelle.com/terms.html</loc>
+    <lastmod>2026-10-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>

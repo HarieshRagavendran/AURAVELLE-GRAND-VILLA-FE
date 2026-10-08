@@ -1,0 +1,18 @@
+{
+  "name": "The Grand Auravelle Pool Villa",
+  "short_name": "Auravelle",
+  "description": "Luxury mountain retreat with private pool suites in Kanthalloor, Kerala.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1713",
+  "theme_color": "#0b1713",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230b1713'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23c6a66a' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E",
+      "sizes": "64x64 192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["travel", "hotel", "villa", "vacation"]
+}

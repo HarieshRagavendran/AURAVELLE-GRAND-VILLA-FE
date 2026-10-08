@@ -1,0 +1,12 @@
+# robots.txt for The Grand Auravelle Pool Villa
+User-agent: *
+Allow: /
+
+# Disallow admin control areas and backend endpoints from search spiders
+Disallow: /admin.html
+Disallow: /admin-login.html
+Disallow: /backend/
+Disallow: /api/
+
+# Specify Sitemap location
+Sitemap: https://thegrandauravelle.com/sitemap.xml
