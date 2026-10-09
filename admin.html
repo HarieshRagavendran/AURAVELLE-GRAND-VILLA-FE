@@ -802,9 +802,9 @@
     window.location.href = 'admin-login.html';
   }
 
-  const API_BASE = window.location.origin.includes(':3000')
-    ? window.location.origin + '/api'
-    : (window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api');
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000/api'
+    : 'https://auravelle-grand-villa-be-production.up.railway.app/api';
 
   let allEnquiries = [];
   let currentFilter = 'all';
